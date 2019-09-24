@@ -123,8 +123,14 @@ class FishFillet extends React.Component {
       angleB - offset,
     );
 
-    this.setState({ closePointA, closePointB, usedRadius, arc });
-    this.setState({ intersectionPoint: pIntersection, circleCenter });
+    this.setState({
+      closePointA,
+      closePointB,
+      usedRadius,
+      arc,
+      intersectionPoint: pIntersection,
+      circleCenter,
+    });
   }
 
   _renderSvg({ width, height }) {
