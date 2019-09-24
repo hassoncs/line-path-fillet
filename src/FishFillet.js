@@ -6,7 +6,8 @@ import { cross } from './fillet-math';
 import { dot } from './fillet-math';
 import { rotateVec } from './fillet-math';
 import { tanCalc } from './fillet-math';
-import { describeArc } from './fillet-math';
+import { describeArc } from './svg-helpers';
+import { len } from './fillet-math';
 
 class FishFillet extends React.Component {
   state = {
@@ -56,81 +57,74 @@ class FishFillet extends React.Component {
       lineB[1][1],
     );
 
-    let intersectionPoint;
-    if (intersection.type === 'intersecting') {
-      intersectionPoint = [intersection.point[0], intersection.point[1]];
-
-      const [pA0, pA1] = lineA;
-      const [pB0, pB1] = lineB;
-      const vecA = [
-        pA0[0] - intersectionPoint[0],
-        pA0[1] - intersectionPoint[1],
-      ];
-      const vecB = [
-        pB0[0] - intersectionPoint[0],
-        pB0[1] - intersectionPoint[1],
-      ];
-      const crossVal = cross(vecA, vecB);
-      const dotVal = dot(vecA, vecB);
-      const angle = Math.atan2(crossVal, dotVal);
-
-      const lenA = Math.sqrt(vecA[0] * vecA[0] + vecA[1] * vecA[1]);
-      const lenB = Math.sqrt(vecB[0] * vecB[0] + vecB[1] * vecB[1]);
-      const tanAngle = Math.tan(angle / 2);
-      const usedRadius = Math.min(
-        radius,
-        Math.abs(tanAngle * lenA),
-        Math.abs(tanAngle * lenB),
-      );
-      const s = usedRadius / Math.sin(angle / 2);
-      const unitA = [vecA[0] / lenA, vecA[1] / lenA];
-      const alongA = [unitA[0] * s, unitA[1] * s];
-
-      const rotated = rotateVec(alongA, angle / 2 - Math.PI);
-      const circleCenter = [
-        rotated[0] + intersectionPoint[0],
-        rotated[1] + intersectionPoint[1],
-      ];
-
-      const { point: closePointA, t: tA } = tanCalc(
-        circleCenter,
-        lineA[0],
-        lineA[1],
-      );
-      const { point: closePointB, t: tB } = tanCalc(
-        circleCenter,
-        lineB[0],
-        lineB[1],
-      );
-
-      const offset = -90;
-      const angleA =
-        (Math.atan2(
-          closePointA[1] - circleCenter[1],
-          closePointA[0] - circleCenter[0],
-        ) *
-          180) /
-        Math.PI;
-      const angleB =
-        (Math.atan2(
-          closePointB[1] - circleCenter[1],
-          closePointB[0] - circleCenter[0],
-        ) *
-          180) /
-        Math.PI;
-      const arc = describeArc(
-        circleCenter[0],
-        circleCenter[1],
-        usedRadius,
-        angleA - offset,
-        angleB - offset,
-      );
-
-      this.setState({ closePointA, closePointB, usedRadius, arc });
-      this.setState({ intersectionPoint, circleCenter });
+    let pIntersection;
+    if (intersection.type !== 'intersecting') {
+      return;
     }
 
-    this.setState({ intersectionPoint });
+    pIntersection = [intersection.point[0], intersection.point[1]];
+
+    const [pA0, pA1] = lineA;
+    const [pB0, pB1] = lineB;
+    const vecA = [pA0[0] - pIntersection[0], pA0[1] - pIntersection[1]];
+    const vecB = [pB0[0] - pIntersection[0], pB0[1] - pIntersection[1]];
+    const crossVal = cross(vecA, vecB);
+    const dotVal = dot(vecA, vecB);
+    const angle = Math.atan2(crossVal, dotVal);
+
+    const [lenA, lenB] = [len(vecA), len(vecB)];
+    const tan = Math.tan(angle / 2);
+    const usedRadius = Math.min(
+      radius,
+      Math.abs(tan * lenA),
+      Math.abs(tan * lenB),
+    );
+    const s = usedRadius / Math.sin(angle / 2);
+    const unitA = [vecA[0] / lenA, vecA[1] / lenA];
+    const alongA = [unitA[0] * s, unitA[1] * s];
+
+    const rotated = rotateVec(alongA, angle / 2 - Math.PI);
+    const circleCenter = [
+      rotated[0] + pIntersection[0],
+      rotated[1] + pIntersection[1],
+    ];
+
+    const { point: closePointA, t: tA } = tanCalc(
+      circleCenter,
+      lineA[0],
+      lineA[1],
+    );
+    const { point: closePointB, t: tB } = tanCalc(
+      circleCenter,
+      lineB[0],
+      lineB[1],
+    );
+
+    const offset = -90;
+    const angleA =
+      (Math.atan2(
+        closePointA[1] - circleCenter[1],
+        closePointA[0] - circleCenter[0],
+      ) *
+        180) /
+      Math.PI;
+    const angleB =
+      (Math.atan2(
+        closePointB[1] - circleCenter[1],
+        closePointB[0] - circleCenter[0],
+      ) *
+        180) /
+      Math.PI;
+    const arc = describeArc(
+      circleCenter[0],
+      circleCenter[1],
+      usedRadius,
+      angleA - offset,
+      angleB - offset,
+    );
+
+    this.setState({ closePointA, closePointB, usedRadius, arc });
+    this.setState({ intersectionPoint: pIntersection, circleCenter });
   }
 
   _renderSvg({ width, height }) {
