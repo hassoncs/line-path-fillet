@@ -8,7 +8,6 @@ module.exports = function override(config, env) {
     ...config,
     plugins: [
       ...config.plugins,
-      new PrettierPlugin(),
     ]
   };
 }
