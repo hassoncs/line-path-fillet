@@ -4,9 +4,13 @@ import ContainerDimensions from "react-container-dimensions";
 
 class FishFillet extends React.Component {
   state = {
-    lineA: [[100, 100], [300, 200]],
+    lineA: [[220, 50], [300, 200]],
     lineB: [[200, 100], [400, 100]]
   };
+
+  componentDidMount() {
+    this._findIntersection();
+  }
 
   _onDrag = (point, propName, pointIndex) => {
     const oldLine = this.state[propName].slice();
@@ -90,14 +94,14 @@ class FishFillet extends React.Component {
         <Draggable
           defaultPosition={{ x: x1, y: y1 }}
           position={{ x: x1, y: y1 }}
-          onDrag={ev => this._onDrag([ev.clientX, ev.clientY], linePropName, 0)}
+          onDrag={(_, { x, y }) => this._onDrag([x, y], linePropName, 0)}
         >
           <circle cx={0} cy={0} r="6" stroke="none" fill={color} />
         </Draggable>
         <Draggable
           defaultPosition={{ x: x2, y: y2 }}
           position={{ x: x2, y: y2 }}
-          onDrag={ev => this._onDrag([ev.clientX, ev.clientY], linePropName, 1)}
+          onDrag={(_, { x, y }) => this._onDrag([x, y], linePropName, 1)}
         >
           <circle cx={0} cy={0} r="6" stroke="none" fill={color} />
         </Draggable>
