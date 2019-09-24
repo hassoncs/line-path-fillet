@@ -1,6 +1,6 @@
-import React from "react";
-import Draggable from "react-draggable";
-import ContainerDimensions from "react-container-dimensions";
+import React from 'react';
+import Draggable from 'react-draggable';
+import ContainerDimensions from 'react-container-dimensions';
 
 class FishFillet extends React.Component {
   state = {
@@ -13,19 +13,19 @@ class FishFillet extends React.Component {
     closePointB: null,
     mousePoint: null,
     radius: 160,
-    usedRadius: 0
+    usedRadius: 0,
   };
 
   componentDidMount() {
     this._findIntersection();
-    this._mouseMove = document.addEventListener("mousemove", this._handleMove);
+    this._mouseMove = document.addEventListener('mousemove', this._handleMove);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("mousemove", this._mouseMove);
+    document.removeEventListener('mousemove', this._mouseMove);
   }
 
-  _handleMove = ev => {
+  _handleMove = (ev) => {
     const mousePoint = [ev.clientX, ev.clientY];
     this.setState({ mousePoint });
     this._findIntersection();
@@ -38,7 +38,7 @@ class FishFillet extends React.Component {
   };
 
   _findIntersection() {
-    const { lineA, lineB, mousePoint, radius } = this.state;
+    const { lineA, lineB, radius } = this.state;
 
     // (x1, y1)-(x2, y2) and (x3, y3)-(x4, y4).
     const intersection = checkIntersection(
@@ -49,22 +49,22 @@ class FishFillet extends React.Component {
       lineB[0][0],
       lineB[0][1],
       lineB[1][0],
-      lineB[1][1]
+      lineB[1][1],
     );
 
     let intersectionPoint;
-    if (intersection.type === "intersecting") {
+    if (intersection.type === 'intersecting') {
       intersectionPoint = [intersection.point.x, intersection.point.y];
 
       const [pA0, pA1] = lineA;
       const [pB0, pB1] = lineB;
       const vecA = [
         pA0[0] - intersectionPoint[0],
-        pA0[1] - intersectionPoint[1]
+        pA0[1] - intersectionPoint[1],
       ];
       const vecB = [
         pB0[0] - intersectionPoint[0],
-        pB0[1] - intersectionPoint[1]
+        pB0[1] - intersectionPoint[1],
       ];
       const crossVal = cross(vecA, vecB);
       const dotVal = dot(vecA, vecB);
@@ -76,7 +76,7 @@ class FishFillet extends React.Component {
       const usedRadius = Math.min(
         radius,
         Math.abs(tanAngle * lenA),
-        Math.abs(tanAngle * lenB)
+        Math.abs(tanAngle * lenB),
       );
       const s = usedRadius / Math.sin(angle / 2);
       const unitA = [vecA[0] / lenA, vecA[1] / lenA];
@@ -85,24 +85,42 @@ class FishFillet extends React.Component {
       const rotated = rotateVec(alongA, angle / 2 - Math.PI);
       const circleCenter = [
         rotated[0] + intersectionPoint[0],
-        rotated[1] + intersectionPoint[1]
+        rotated[1] + intersectionPoint[1],
       ];
 
       const { point: closePointA, t: tA } = tanCalc(
         circleCenter,
         lineA[0],
-        lineA[1]
+        lineA[1],
       );
       const { point: closePointB, t: tB } = tanCalc(
         circleCenter,
         lineB[0],
-        lineB[1]
+        lineB[1],
       );
 
       const offset = -90;
-      const angleA = Math.atan2(closePointA[1] - circleCenter[1], closePointA[0] - circleCenter[0]) * 180 / Math.PI;
-      const angleB = Math.atan2(closePointB[1] - circleCenter[1], closePointB[0] - circleCenter[0]) * 180 / Math.PI;
-      const arc = describeArc(circleCenter[0], circleCenter[1], usedRadius, angleA - offset, angleB - offset);
+      const angleA =
+        (Math.atan2(
+          closePointA[1] - circleCenter[1],
+          closePointA[0] - circleCenter[0],
+        ) *
+          180) /
+        Math.PI;
+      const angleB =
+        (Math.atan2(
+          closePointB[1] - circleCenter[1],
+          closePointB[0] - circleCenter[0],
+        ) *
+          180) /
+        Math.PI;
+      const arc = describeArc(
+        circleCenter[0],
+        circleCenter[1],
+        usedRadius,
+        angleA - offset,
+        angleB - offset,
+      );
 
       this.setState({ closePointA, closePointB, usedRadius, arc });
       this.setState({ intersectionPoint, circleCenter });
@@ -137,7 +155,7 @@ class FishFillet extends React.Component {
       closePointB,
       radius,
       usedRadius,
-      arc
+      arc,
     } = this.state;
     return (
       <g>
@@ -149,8 +167,9 @@ class FishFillet extends React.Component {
               r={usedRadius || radius}
               stroke="lightgrey"
               strokeWidth={4}
-              fill={"none"}
-              style={{ pointerEvents: "none" }}
+              fill={'none'}
+              strokeOpacity={0.1}
+              style={{ pointerEvents: 'none' }}
             />
           </>
         )}
@@ -162,9 +181,9 @@ class FishFillet extends React.Component {
                 y1={closePointA[1]}
                 x2={mousePoint[0]}
                 y2={mousePoint[1]}
-                stroke={"darkred"}
+                stroke={'darkred'}
                 strokeWidth={2}
-                strokeLinecap={"round"}
+                strokeLinecap={'round'}
               />
             )}
             <circle
@@ -172,8 +191,8 @@ class FishFillet extends React.Component {
               cy={closePointA[1]}
               r="6"
               stroke="none"
-              fill={"darkred"}
-              style={{ pointerEvents: "none" }}
+              fill={'darkred'}
+              style={{ pointerEvents: 'none' }}
             />
           </>
         )}
@@ -185,9 +204,9 @@ class FishFillet extends React.Component {
                 y1={closePointB[1]}
                 x2={mousePoint[0]}
                 y2={mousePoint[1]}
-                stroke={"darkblue"}
+                stroke={'darkblue'}
                 strokeWidth={2}
-                strokeLinecap={"round"}
+                strokeLinecap={'round'}
               />
             )}
             <circle
@@ -195,36 +214,36 @@ class FishFillet extends React.Component {
               cy={closePointB[1]}
               r="6"
               stroke="none"
-              fill={"darkblue"}
-              style={{ pointerEvents: "none" }}
+              fill={'darkblue'}
+              style={{ pointerEvents: 'none' }}
             />
           </>
         )}
-        {arc &&
+        {arc && (
           <>
             <line
               x1={lineA[0][0]}
               y1={lineA[0][1]}
               x2={closePointA[0]}
               y2={closePointA[1]}
-              stroke={"white"}
+              stroke={'white'}
               strokeWidth={6}
-              strokeLinecap={"round"}
+              strokeLinecap={'round'}
             />
             <line
               x1={lineB[0][0]}
               y1={lineB[0][1]}
               x2={closePointB[0]}
               y2={closePointB[1]}
-              stroke={"white"}
+              stroke={'white'}
               strokeWidth={6}
-              strokeLinecap={"round"}
+              strokeLinecap={'round'}
             />
-            <path d={arc} stroke={'white'} strokeWidth={6} fill={'none'}/>
+            <path d={arc} stroke={'white'} strokeWidth={6} fill={'none'} />
           </>
-        }
-        {this._renderLine(lineA, "lineA", "red")}
-        {this._renderLine(lineB, "lineB", "blue")}
+        )}
+        {this._renderLine(lineA, 'lineA', 'red')}
+        {this._renderLine(lineB, 'lineB', 'blue')}
         {intersectionPoint && (
           <>
             <circle
@@ -232,19 +251,11 @@ class FishFillet extends React.Component {
               cy={intersectionPoint[1]}
               r="6"
               stroke="none"
-              fill={"purple"}
-              style={{ pointerEvents: "none" }}
+              fill={'purple'}
+              strokeOpacity={0.1}
+              style={{ pointerEvents: 'none' }}
             />
           </>
-        )}
-        {false && mousePoint && (
-          <circle
-            cx={mousePoint[0]}
-            cy={mousePoint[1]}
-            r="1"
-            stroke="none"
-            fill={"black"}
-          />
         )}
       </g>
     );
@@ -263,7 +274,8 @@ class FishFillet extends React.Component {
           y2={y2}
           stroke={color}
           strokeWidth={4}
-          strokeLinecap={"round"}
+          strokeOpacity={0.1}
+          strokeLinecap={'round'}
         />
         <Draggable
           defaultPosition={{ x: x1, y: y1 }}
@@ -288,12 +300,12 @@ class FishFillet extends React.Component {
       <div
         className="root"
         style={{
-          height: "100%",
-          background: "grey",
-          position: "absolute",
+          height: '100%',
+          background: 'grey',
+          position: 'absolute',
           top: 0,
           left: 0,
-          width: "100%"
+          width: '100%',
         }}
       >
         <ContainerDimensions>
@@ -304,9 +316,9 @@ class FishFillet extends React.Component {
   }
 }
 
-const COLINEAR = intersectResult("colinear");
-const PARALLEL = intersectResult("parallel");
-const NONE = intersectResult("none");
+const COLINEAR = intersectResult('colinear');
+const PARALLEL = intersectResult('parallel');
+const NONE = intersectResult('none');
 
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
 const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
@@ -342,50 +354,57 @@ export function checkIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
   const uA = numeA / denom;
   const uB = numeB / denom;
 
-  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-    return intersecting({
-      x: x1 + uA * (x2 - x1),
-      y: y1 + uA * (y2 - y1)
-    });
-  }
+  // if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+  return intersecting({
+    x: x1 + uA * (x2 - x1),
+    y: y1 + uA * (y2 - y1),
+  });
+  // }
 
   return NONE;
 }
 
 function intersecting(point) {
-  const result = intersectResult("intersecting");
+  const result = intersectResult('intersecting');
   result.point = point;
   return result;
 }
 
 function intersectResult(type) {
   return {
-    type
+    type,
   };
 }
 
 // from https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-  var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
 
   return {
-    x: centerX + (radius * Math.cos(angleInRadians)),
-    y: centerY + (radius * Math.sin(angleInRadians))
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians),
   };
 }
 
-function describeArc(x, y, radius, startAngle, endAngle){
+function describeArc(x, y, radius, startAngle, endAngle) {
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
 
-  var start = polarToCartesian(x, y, radius, endAngle);
-  var end = polarToCartesian(x, y, radius, startAngle);
-
-  var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-  var d = [
-    "M", start.x, start.y,
-    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-  ].join(" ");
+  const d = [
+    'M',
+    start.x,
+    start.y,
+    'A',
+    radius,
+    radius,
+    0,
+    largeArcFlag,
+    0,
+    end.x,
+    end.y,
+  ].join(' ');
 
   return d;
 }
