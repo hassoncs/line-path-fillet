@@ -79,7 +79,6 @@ class FishFillet extends React.Component {
         Math.abs(tanAngle * lenB)
       );
       const s = usedRadius / Math.sin(angle / 2);
-
       const unitA = [vecA[0] / lenA, vecA[1] / lenA];
       const alongA = [unitA[0] * s, unitA[1] * s];
 
@@ -100,7 +99,12 @@ class FishFillet extends React.Component {
         lineB[1]
       );
 
-      this.setState({ closePointA, closePointB, usedRadius });
+      const offset = -90;
+      const angleA = Math.atan2(closePointA[1] - circleCenter[1], closePointA[0] - circleCenter[0]) * 180 / Math.PI;
+      const angleB = Math.atan2(closePointB[1] - circleCenter[1], closePointB[0] - circleCenter[0]) * 180 / Math.PI;
+      const arc = describeArc(circleCenter[0], circleCenter[1], usedRadius, angleA - offset, angleB - offset);
+
+      this.setState({ closePointA, closePointB, usedRadius, arc });
       this.setState({ intersectionPoint, circleCenter });
     }
 
@@ -132,7 +136,8 @@ class FishFillet extends React.Component {
       circleCenter,
       closePointB,
       radius,
-      usedRadius
+      usedRadius,
+      arc
     } = this.state;
     return (
       <g>
@@ -142,7 +147,7 @@ class FishFillet extends React.Component {
               cx={circleCenter[0]}
               cy={circleCenter[1]}
               r={usedRadius || radius}
-              stroke="white"
+              stroke="lightgrey"
               strokeWidth={4}
               fill={"none"}
               style={{ pointerEvents: "none" }}
@@ -195,6 +200,29 @@ class FishFillet extends React.Component {
             />
           </>
         )}
+        {arc &&
+          <>
+            <line
+              x1={lineA[0][0]}
+              y1={lineA[0][1]}
+              x2={closePointA[0]}
+              y2={closePointA[1]}
+              stroke={"white"}
+              strokeWidth={6}
+              strokeLinecap={"round"}
+            />
+            <line
+              x1={lineB[0][0]}
+              y1={lineB[0][1]}
+              x2={closePointB[0]}
+              y2={closePointB[1]}
+              stroke={"white"}
+              strokeWidth={6}
+              strokeLinecap={"round"}
+            />
+            <path d={arc} stroke={'white'} strokeWidth={6} fill={'none'}/>
+          </>
+        }
         {this._renderLine(lineA, "lineA", "red")}
         {this._renderLine(lineB, "lineB", "blue")}
         {intersectionPoint && (
@@ -221,7 +249,7 @@ class FishFillet extends React.Component {
       </g>
     );
   }
-  
+
   _renderLine(line, linePropName, color) {
     const [pointA, pointB] = line;
     const [x1, y1] = pointA;
