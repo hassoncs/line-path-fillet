@@ -12,7 +12,8 @@ class FishFillet extends React.Component {
     closePointA: null,
     closePointB: null,
     mousePoint: null,
-    radius: 25
+    radius: 160,
+    usedRadius: 0
   };
 
   componentDidMount() {
@@ -39,24 +40,6 @@ class FishFillet extends React.Component {
   _findIntersection() {
     const { lineA, lineB, mousePoint, radius } = this.state;
 
-    if (mousePoint) {
-      const tanCalc = (p, a, b) => {
-        const vecAB = [b[0] - a[0], b[1] - a[1]];
-        const vecAP = [p[0] - a[0], p[1] - a[1]];
-        const len = vecAB[0] * vecAB[0] + vecAB[1] * vecAB[1];
-        const dot = vecAP[0] * vecAB[0] + vecAP[1] * vecAB[1];
-        const t = dot / len;
-        const point = [a[0] + vecAB[0] * t, a[1] + vecAB[1] * t];
-
-        return { len, dot, t, point };
-      };
-
-      const { point: closePointA } = tanCalc(mousePoint, lineA[0], lineA[1]);
-      const { point: closePointB } = tanCalc(mousePoint, lineB[0], lineB[1]);
-
-      // this.setState({ closePointA, closePointB });
-    }
-
     // (x1, y1)-(x2, y2) and (x3, y3)-(x4, y4).
     const intersection = checkIntersection(
       lineA[0][0],
@@ -73,43 +56,52 @@ class FishFillet extends React.Component {
     if (intersection.type === "intersecting") {
       intersectionPoint = [intersection.point.x, intersection.point.y];
 
-      const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
-      const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
-      const rotateVec = (vec, angle) => {
-        let cos = Math.cos(angle);
-        let sin = Math.sin(angle);
-        return [vec[0] * cos - vec[1] * sin, vec[0] * sin + vec[1] * cos];
-      };
-
       const [pA0, pA1] = lineA;
       const [pB0, pB1] = lineB;
       const vecA = [
-        pA1[0] - intersectionPoint[0],
-        pA1[1] - intersectionPoint[1]
+        pA0[0] - intersectionPoint[0],
+        pA0[1] - intersectionPoint[1]
       ];
       const vecB = [
-        pB1[0] - intersectionPoint[0],
-        pB1[1] - intersectionPoint[1]
+        pB0[0] - intersectionPoint[0],
+        pB0[1] - intersectionPoint[1]
       ];
       const crossVal = cross(vecA, vecB);
       const dotVal = dot(vecA, vecB);
       const angle = Math.atan2(crossVal, dotVal);
-      const s = radius / Math.sin(angle / 2);
 
       const lenA = Math.sqrt(vecA[0] * vecA[0] + vecA[1] * vecA[1]);
+      const lenB = Math.sqrt(vecB[0] * vecB[0] + vecB[1] * vecB[1]);
+      const tanAngle = Math.tan(angle / 2);
+      const usedRadius = Math.min(
+        radius,
+        Math.abs(tanAngle * lenA),
+        Math.abs(tanAngle * lenB)
+      );
+      const s = usedRadius / Math.sin(angle / 2);
+
       const unitA = [vecA[0] / lenA, vecA[1] / lenA];
       const alongA = [unitA[0] * s, unitA[1] * s];
-      const rotated = rotateVec(alongA, angle / 2);
+
+      const rotated = rotateVec(alongA, angle / 2 - Math.PI);
       const circleCenter = [
         rotated[0] + intersectionPoint[0],
         rotated[1] + intersectionPoint[1]
       ];
 
-      this.setState({ intersectionPoint, circleCenter });
+      const { point: closePointA, t: tA } = tanCalc(
+        circleCenter,
+        lineA[0],
+        lineA[1]
+      );
+      const { point: closePointB, t: tB } = tanCalc(
+        circleCenter,
+        lineB[0],
+        lineB[1]
+      );
 
-      // const unitVecA = )=(𝑥cos𝜃−𝑦sin𝜃,𝑥sin𝜃+𝑦cos𝜃)
-      console.log(`angle`, (angle * 180) / Math.PI);
-      // Math.Atan2(Cross(A,B), Dot(A,B));
+      this.setState({ closePointA, closePointB, usedRadius });
+      this.setState({ intersectionPoint, circleCenter });
     }
 
     this.setState({ intersectionPoint });
@@ -139,7 +131,8 @@ class FishFillet extends React.Component {
       closePointA,
       circleCenter,
       closePointB,
-      radius
+      radius,
+      usedRadius
     } = this.state;
     return (
       <g>
@@ -148,7 +141,7 @@ class FishFillet extends React.Component {
             <circle
               cx={circleCenter[0]}
               cy={circleCenter[1]}
-              r={radius}
+              r={usedRadius || radius}
               stroke="white"
               strokeWidth={4}
               fill={"none"}
@@ -211,7 +204,7 @@ class FishFillet extends React.Component {
               cy={intersectionPoint[1]}
               r="6"
               stroke="none"
-              fill={"yellow"}
+              fill={"purple"}
               style={{ pointerEvents: "none" }}
             />
           </>
@@ -228,6 +221,7 @@ class FishFillet extends React.Component {
       </g>
     );
   }
+  
   _renderLine(line, linePropName, color) {
     const [pointA, pointB] = line;
     const [x1, y1] = pointA;
@@ -286,6 +280,24 @@ const COLINEAR = intersectResult("colinear");
 const PARALLEL = intersectResult("parallel");
 const NONE = intersectResult("none");
 
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+const rotateVec = (vec, angle) => {
+  let cos = Math.cos(angle);
+  let sin = Math.sin(angle);
+  return [vec[0] * cos - vec[1] * sin, vec[0] * sin + vec[1] * cos];
+};
+const tanCalc = (p, a, b) => {
+  const vecAB = [b[0] - a[0], b[1] - a[1]];
+  const vecAP = [p[0] - a[0], p[1] - a[1]];
+  const len = vecAB[0] * vecAB[0] + vecAB[1] * vecAB[1];
+  const dot = vecAP[0] * vecAB[0] + vecAP[1] * vecAB[1];
+  const t = dot / len;
+  const point = [a[0] + vecAB[0] * t, a[1] + vecAB[1] * t];
+
+  return { len, dot, t, point };
+};
+
 // (x1, y1)-(x2, y2) and (x3, y3)-(x4, y4).
 export function checkIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
   const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
@@ -322,6 +334,32 @@ function intersectResult(type) {
   return {
     type
   };
+}
+
+// from https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+  var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+  return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+
+function describeArc(x, y, radius, startAngle, endAngle){
+
+  var start = polarToCartesian(x, y, radius, endAngle);
+  var end = polarToCartesian(x, y, radius, startAngle);
+
+  var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+  var d = [
+    "M", start.x, start.y,
+    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+  ].join(" ");
+
+  return d;
 }
 
 export default FishFillet;
