@@ -1,12 +1,13 @@
 {
   "name": "line-path-fillet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "homepage": "https://hassoncs.github.io/line-path-fillet/",
   "dependencies": {},
   "scripts": {
     "test": "echo 'No tests to run– continuing'",
-    "build": "mkdir build && npx babel --presets babel-preset-es2015 lib/line-path-fillet.js > build/line-path-fillet.js"
+    "build": "npx babel --presets babel-preset-es2015 lib/line-path-fillet.js > build/line-path-fillet.js",
+    "publish": "npx np"
   },
   "eslintConfig": {
     "extends": "react-app"
