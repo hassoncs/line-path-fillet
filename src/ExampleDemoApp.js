@@ -1,10 +1,10 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import ContainerDimensions from 'react-container-dimensions';
-import { filletCorner, checkIntersection } from './fillet-math';
+import { filletCorner, getIntersection } from './fillet-math';
 import { describeArc } from './svg-helpers';
 
-class FishFillet extends React.Component {
+class ExampleDemoApp extends React.Component {
   state = {
     lineA: [[300, 200], [220, 50]],
     lineB: [[400, 100], [200, 100]],
@@ -41,7 +41,7 @@ class FishFillet extends React.Component {
 
   _findIntersection() {
     const { lineA, lineB, radius } = this.state;
-    const intersection = checkIntersection(
+    const intersectionPoint = getIntersection(
       lineA[0][0],
       lineA[0][1],
       lineA[1][0],
@@ -51,14 +51,14 @@ class FishFillet extends React.Component {
       lineB[1][0],
       lineB[1][1],
     );
+    if (!intersectionPoint) return;
 
-    let pIntersection;
-    if (intersection.type !== 'intersecting') {
-      return;
-    }
-
-    pIntersection = [intersection.point[0], intersection.point[1]];
-    const filletData = filletCorner(lineA[0], pIntersection, lineB[0], radius);
+    const filletData = filletCorner(
+      lineA[0],
+      intersectionPoint,
+      lineB[0],
+      radius,
+    );
     const {
       radius: usedRadius,
       angleA,
@@ -81,7 +81,7 @@ class FishFillet extends React.Component {
       closePointB: tanPointB,
       usedRadius,
       arc,
-      intersectionPoint: pIntersection,
+      intersectionPoint: intersectionPoint,
       circleCenter,
     });
   }
@@ -277,4 +277,4 @@ class FishFillet extends React.Component {
   }
 }
 
-export default FishFillet;
+export default ExampleDemoApp;

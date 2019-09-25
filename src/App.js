@@ -1,11 +1,11 @@
-import React from "react";
-import "./App.module.scss";
-import FishFillet from "./FishFillet";
+import React from 'react';
+import './App.module.scss';
+import ExampleDemoApp from './ExampleDemoApp';
 
 function App() {
   return (
     <div className="App">
-      <FishFillet />
+      <ExampleDemoApp />
     </div>
   );
 }
