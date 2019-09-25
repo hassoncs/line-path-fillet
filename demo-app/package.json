@@ -1,0 +1,47 @@
+{
+  "name": "line-path-fillet-demo",
+  "version": "0.1.0",
+  "private": false,
+  "homepage": "https://hassoncs.github.io/line-path-fillet/",
+  "dependencies": {
+    "react": "^16.9.0",
+    "react-container-dimensions": "^1.4.1",
+    "react-dom": "^16.9.0",
+    "react-draggable": "^4.0.3",
+    "react-scripts": "3.1.2"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "echo 'No tests to run – continuing'",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "clean": "rm -rf build",
+    "prettier-watch": "onchange '**/*.js' -- prettier --write {{changed}}"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.1.1",
+    "lodash": "^4.17.15",
+    "node-sass": "^4.12.0",
+    "onchange": "^6.1.0",
+    "prettier": "^1.18.2",
+    "prettier-webpack-plugin": "^1.2.0",
+    "react-app-rewired": "^2.1.3"
+  }
+}
