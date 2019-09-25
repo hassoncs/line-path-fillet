@@ -16,7 +16,7 @@ importScripts(
 );
 
 importScripts(
-  '/line-path-fillet/precache-manifest.fb5ae17aa7a806059dde8c355d0e7ff6.js',
+  '/line-path-fillet/precache-manifest.8307ec66abb962444fef4ff33dec968a.js',
 );
 
 self.addEventListener('message', (event) => {
