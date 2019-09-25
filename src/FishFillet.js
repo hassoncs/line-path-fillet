@@ -1,13 +1,8 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import ContainerDimensions from 'react-container-dimensions';
-import { checkIntersection } from './fillet-math';
-import { cross } from './fillet-math';
-import { dot } from './fillet-math';
-import { rotateVec } from './fillet-math';
-import { tanCalc } from './fillet-math';
+import { filletCorner, checkIntersection } from './fillet-math';
 import { describeArc } from './svg-helpers';
-import { len } from './fillet-math';
 
 class FishFillet extends React.Component {
   state = {
@@ -19,7 +14,7 @@ class FishFillet extends React.Component {
     closePointA: null,
     closePointB: null,
     mousePoint: null,
-    radius: 30,
+    radius: 50,
     usedRadius: 0,
   };
 
@@ -63,69 +58,27 @@ class FishFillet extends React.Component {
     }
 
     pIntersection = [intersection.point[0], intersection.point[1]];
-
-    const [pA0, pA1] = lineA;
-    const [pB0, pB1] = lineB;
-    const vecA = [pA0[0] - pIntersection[0], pA0[1] - pIntersection[1]];
-    const vecB = [pB0[0] - pIntersection[0], pB0[1] - pIntersection[1]];
-    const crossVal = cross(vecA, vecB);
-    const dotVal = dot(vecA, vecB);
-    const angle = Math.atan2(crossVal, dotVal);
-
-    const [lenA, lenB] = [len(vecA), len(vecB)];
-    const tan = Math.tan(angle / 2);
-    const usedRadius = Math.min(
-      radius,
-      Math.abs(tan * lenA),
-      Math.abs(tan * lenB),
-    );
-    const s = usedRadius / Math.sin(angle / 2);
-    const unitA = [vecA[0] / lenA, vecA[1] / lenA];
-    const alongA = [unitA[0] * s, unitA[1] * s];
-
-    const rotated = rotateVec(alongA, angle / 2 - Math.PI);
-    const circleCenter = [
-      rotated[0] + pIntersection[0],
-      rotated[1] + pIntersection[1],
-    ];
-
-    const { point: closePointA, t: tA } = tanCalc(
+    const filletData = filletCorner(lineA[0], pIntersection, lineB[0], radius);
+    const {
+      radius: usedRadius,
+      angleA,
+      angleB,
+      tanPointA,
+      tanPointB,
       circleCenter,
-      lineA[0],
-      lineA[1],
-    );
-    const { point: closePointB, t: tB } = tanCalc(
-      circleCenter,
-      lineB[0],
-      lineB[1],
-    );
+    } = filletData;
 
-    const offset = -90;
-    const angleA =
-      (Math.atan2(
-        closePointA[1] - circleCenter[1],
-        closePointA[0] - circleCenter[0],
-      ) *
-        180) /
-      Math.PI;
-    const angleB =
-      (Math.atan2(
-        closePointB[1] - circleCenter[1],
-        closePointB[0] - circleCenter[0],
-      ) *
-        180) /
-      Math.PI;
     const arc = describeArc(
       circleCenter[0],
       circleCenter[1],
       usedRadius,
-      angleA - offset,
-      angleB - offset,
+      angleA,
+      angleB,
     );
 
     this.setState({
-      closePointA,
-      closePointB,
+      closePointA: tanPointA,
+      closePointB: tanPointB,
       usedRadius,
       arc,
       intersectionPoint: pIntersection,
@@ -225,24 +178,28 @@ class FishFillet extends React.Component {
         )}
         {arc && (
           <>
-            <line
-              x1={lineA[0][0]}
-              y1={lineA[0][1]}
-              x2={closePointA[0]}
-              y2={closePointA[1]}
-              stroke={'white'}
-              strokeWidth={6}
-              strokeLinecap={'round'}
-            />
-            <line
-              x1={lineB[0][0]}
-              y1={lineB[0][1]}
-              x2={closePointB[0]}
-              y2={closePointB[1]}
-              stroke={'white'}
-              strokeWidth={6}
-              strokeLinecap={'round'}
-            />
+            {closePointA && (
+              <line
+                x1={lineA[0][0]}
+                y1={lineA[0][1]}
+                x2={closePointA[0]}
+                y2={closePointA[1]}
+                stroke={'white'}
+                strokeWidth={6}
+                strokeLinecap={'round'}
+              />
+            )}
+            {closePointB && (
+              <line
+                x1={lineB[0][0]}
+                y1={lineB[0][1]}
+                x2={closePointB[0]}
+                y2={closePointB[1]}
+                stroke={'white'}
+                strokeWidth={6}
+                strokeLinecap={'round'}
+              />
+            )}
             <path d={arc} stroke={'white'} strokeWidth={6} fill={'none'} />
           </>
         )}
