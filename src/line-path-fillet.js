@@ -1,14 +1,15 @@
-export const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
-export const len2 = (a) => a[0] * a[0] + a[1] * a[1];
-export const len = (a) => Math.sqrt(len2(a));
-export const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
-export const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
-export const rotateVec = (vec, angle) => {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [vec[0] * cos - vec[1] * sin, vec[0] * sin + vec[1] * cos];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const len2 = (a) => a[0] * a[0] + a[1] * a[1];
+const len = (a) => Math.sqrt(len2(a));
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+const rotate = (ab, angleRads) => {
+  const cos = Math.cos(angleRads);
+  const sin = Math.sin(angleRads);
+  return [ab[0] * cos - ab[1] * sin, ab[0] * sin + ab[1] * cos];
 };
-export const closestPointOnLine = (p, a, b) => {
+
+export function findClosestPointBetweenPoints(p, a, b) {
   const ab = sub(b, a);
   const ap = sub(p, a);
   const len = len2(ab);
@@ -16,9 +17,9 @@ export const closestPointOnLine = (p, a, b) => {
   const t = dotVal / len;
   const point = [a[0] + ab[0] * t, a[1] + ab[1] * t];
   return point;
-};
+}
 
-export function getIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+export function findIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
   const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
   const numeA = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
   // const numeB = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
@@ -52,11 +53,11 @@ export function filletCorner(pa, pb, pc, requestedRadius) {
   const unitA = [vecA[0] / lenA, vecA[1] / lenA];
   const alongA = [unitA[0] * s, unitA[1] * s];
 
-  const rotated = rotateVec(alongA, halfAngle - Math.PI);
+  const rotated = rotate(alongA, halfAngle - Math.PI);
   const circleCenter = [rotated[0] + pb[0], rotated[1] + pb[1]];
 
-  const tanPointA = closestPointOnLine(circleCenter, pa, pb);
-  const tanPointB = closestPointOnLine(circleCenter, pc, pb);
+  const tanPointA = findClosestPointBetweenPoints(circleCenter, pa, pb);
+  const tanPointB = findClosestPointBetweenPoints(circleCenter, pc, pb);
 
   const offset = -90;
   const angleA =

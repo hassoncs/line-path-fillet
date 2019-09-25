@@ -1,7 +1,7 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import ContainerDimensions from 'react-container-dimensions';
-import { filletCorner, getIntersection } from './fillet-math';
+import { filletCorner, findIntersection } from './line-path-fillet';
 import { describeArc } from './svg-helpers';
 
 class ExampleDemoApp extends React.Component {
@@ -41,7 +41,7 @@ class ExampleDemoApp extends React.Component {
 
   _findIntersection() {
     const { lineA, lineB, radius } = this.state;
-    const intersectionPoint = getIntersection(
+    const intersectionPoint = findIntersection(
       lineA[0][0],
       lineA[0][1],
       lineA[1][0],
