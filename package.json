@@ -8,7 +8,7 @@
   "scripts": {
     "test": "echo 'No tests to run– continuing'",
     "build": "npx babel --presets babel-preset-es2015 lib/line-path-fillet.js > build/index.js",
-    "copy": "cp -f package.json build",
+    "copy": "cp -f {README.md,package.json} build",
     "publish": "npx np --contents build"
   },
   "eslintConfig": {
@@ -22,5 +22,18 @@
     "np": "^5.1.0",
     "onchange": "^6.1.0",
     "prettier": "^1.18.2"
-  }
+  },
+  "keywords": [
+    "fillet",
+    "line",
+    "path",
+    "points",
+    "arc",
+    "tangets",
+    "fit",
+    "max",
+    "maximum",
+    "segment",
+    "geometry"
+  ]
 }
