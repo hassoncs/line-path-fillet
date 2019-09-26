@@ -4,7 +4,7 @@
   "private": false,
   "homepage": "https://hassoncs.github.io/line-path-fillet/",
   "dependencies": {
-    "line-path-fillet": "^0.1.0",
+    "line-path-fillet": "^0.1.4",
     "react": "^16.9.0",
     "react-container-dimensions": "^1.4.1",
     "react-dom": "^16.9.0",

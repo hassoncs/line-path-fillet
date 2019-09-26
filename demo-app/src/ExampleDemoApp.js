@@ -1,8 +1,9 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import ContainerDimensions from 'react-container-dimensions';
-import { filletCorner, findIntersection } from './line-path-fillet';
+import { filletCorner, findIntersection } from 'line-path-fillet';
 import { describeArc } from './svg-helpers';
+import styles from './ExampleDemoApp.module.scss';
 
 class ExampleDemoApp extends React.Component {
   state = {
@@ -243,14 +244,28 @@ class ExampleDemoApp extends React.Component {
           position={{ x: x1, y: y1 }}
           onDrag={(_, { x, y }) => this._onDrag([x, y], linePropName, 0)}
         >
-          <circle cx={0} cy={0} r="8" stroke="none" fill={color} />
+          <circle
+            cx={0}
+            cy={0}
+            r="8"
+            stroke="none"
+            fill={color}
+            className={styles.handle}
+          />
         </Draggable>
         <Draggable
           defaultPosition={{ x: x2, y: y2 }}
           position={{ x: x2, y: y2 }}
           onDrag={(_, { x, y }) => this._onDrag([x, y], linePropName, 1)}
         >
-          <circle cx={0} cy={0} r="4" stroke="none" fill={color} />
+          <circle
+            cx={0}
+            cy={0}
+            r="4"
+            stroke="none"
+            fill={color}
+            className={styles.handle}
+          />
         </Draggable>
       </g>
     );
