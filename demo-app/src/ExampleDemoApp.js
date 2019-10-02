@@ -5,17 +5,20 @@ import { filletCorner, findIntersection } from './line-path-fillet';
 import { describeArc } from './svg-helpers';
 import styles from './ExampleDemoApp.module.scss';
 
-const testCases = [{
-	lineA: [[300, 200], [220, 50]],
-	lineB: [[400, 100], [200, 100]],
-},{
-	lineA: [ [300, 200], [420, 150]],
-	lineB: [ [200, 50], [400, 100],],
-}];
+const testCases = [
+  {
+    lineA: [[300, 200], [220, 50]],
+    lineB: [[400, 100], [200, 100]],
+  },
+  {
+    lineA: [[300, 200], [420, 150]],
+    lineB: [[200, 50], [400, 100]],
+  },
+];
 
 class ExampleDemoApp extends React.Component {
   state = {
-  	...testCases[1],
+    ...testCases[0],
     tanLineA: [[0, 0], [0, 0]],
     intersectionPoint: null,
     circleCenter: null,
@@ -80,8 +83,8 @@ class ExampleDemoApp extends React.Component {
       circleCenter[0],
       circleCenter[1],
       usedRadius,
-      angleA,
-      angleB,
+      angleA * (180 / Math.PI),
+      angleB * (180 / Math.PI),
     );
 
     this.setState({
