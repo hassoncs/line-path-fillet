@@ -1,14 +1,21 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import ContainerDimensions from 'react-container-dimensions';
-import { filletCorner, findIntersection } from 'line-path-fillet';
+import { filletCorner, findIntersection } from './line-path-fillet';
 import { describeArc } from './svg-helpers';
 import styles from './ExampleDemoApp.module.scss';
 
+const testCases = [{
+	lineA: [[300, 200], [220, 50]],
+	lineB: [[400, 100], [200, 100]],
+},{
+	lineA: [ [300, 200], [420, 150]],
+	lineB: [ [200, 50], [400, 100],],
+}];
+
 class ExampleDemoApp extends React.Component {
   state = {
-    lineA: [[300, 200], [220, 50]],
-    lineB: [[400, 100], [200, 100]],
+  	...testCases[1],
     tanLineA: [[0, 0], [0, 0]],
     intersectionPoint: null,
     circleCenter: null,
