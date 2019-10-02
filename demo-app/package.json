@@ -19,7 +19,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "clean": "rm -rf build",
-    "prettier-watch": "onchange '**/*.js' -- prettier --write {{changed}}"
+    "prettier-watch": "onchange '../**/*.js' -- prettier --write {{changed}}"
   },
   "eslintConfig": {
     "extends": "react-app"
