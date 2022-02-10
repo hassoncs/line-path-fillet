@@ -39,7 +39,7 @@
   "devDependencies": {
     "gh-pages": "^2.1.1",
     "lodash": "^4.17.15",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "onchange": "^6.1.0",
     "prettier": "^1.18.2",
     "prettier-webpack-plugin": "^1.2.0",
